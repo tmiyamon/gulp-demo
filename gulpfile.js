@@ -18,31 +18,40 @@ var gulp = require('gulp'),
   source = require('vinyl-source-stream'),
   buffer = require('vinyl-buffer'),
   webserver = require('gulp-webserver'),
-  del = require('del');
+  del = require('del'),
+  runSequence = require('run-sequence')
+;
+
+// env
+var isProduction = (process.env.NODE_ENV || 'development') == 'production';
+
 
 // Styles
 gulp.task('styles', function() {
-  return gulp.src('./src/styles/main.scss')
+  var exec = gulp.src('./src/styles/main.scss')
     .pipe(sass({ errLogToConsole: true }))
-    .pipe(autoprefixer('last 2 version'))
-    .pipe(gulp.dest('dist/styles'))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(cssnano())
-    .pipe(gulp.dest('dist/styles'))
-    .pipe(notify({ message: 'Styles task complete' }));
+    .pipe(autoprefixer('last 2 version'));
+
+  if (isProduction) {
+    exec = exec.pipe(cssnano());
+  }
+
+  return exec.pipe(gulp.dest('dist/styles'))
 });
 
 // Scripts
 gulp.task('scripts', function() {
-  return browserify('src/scripts/main.js')
+  var exec = browserify('src/scripts/main.js')
     .bundle()
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('dist/scripts'))
-    .pipe(buffer())
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(uglify())
-    .pipe(gulp.dest('dist/scripts'))
-    .pipe(notify({ message: 'Scripts task complete' }));
+
+  if (isProduction) {
+    exec = exec
+      .pipe(buffer())
+      .pipe(uglify());
+  }
+
+  return exec.pipe(gulp.dest('dist/scripts'));
 });
 
 // Images
@@ -50,13 +59,11 @@ gulp.task('images', function() {
   return gulp.src('src/images/**/*')
     .pipe(cache(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true })))
     .pipe(gulp.dest('dist/images'))
-    .pipe(notify({ message: 'Images task complete' }));
 });
 
 gulp.task('htmls', function() {
   return gulp.src('src/*.html')
     .pipe(gulp.dest('dist/'))
-    .pipe(notify({ message: 'Htmls task complete' }));
 });
 
 // Clean
@@ -74,8 +81,12 @@ gulp.task('webserver', function() {
     }));
 });
 
-gulp.task('start', ['styles', 'scripts', 'images', 'htmls'], function() {
-  gulp.start('webserver', 'watch');
+gulp.task('build', ['clean'], function() {
+  runSequence('clean', 'styles', 'scripts', 'images', 'htmls');
+});
+
+gulp.task('start', function() {
+  runSequence('clean', 'styles', 'scripts', 'images', 'htmls', 'webserver', 'watch');
 });
 
 gulp.task('default', ['start']);

@@ -30,6 +30,7 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
-    "gulp-webserver": "^0.9.1"
+    "gulp-webserver": "^0.9.1",
+    "run-sequence": "^1.2.2"
   }
 }
