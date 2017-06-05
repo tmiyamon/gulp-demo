@@ -14,10 +14,10 @@ var gulp = require('gulp'),
   concat = require('gulp-concat'),
   notify = require('gulp-notify'),
   cache = require('gulp-cache'),
-  livereload = require('gulp-livereload'),
   browserify = require('browserify'),
   source = require('vinyl-source-stream'),
   buffer = require('vinyl-buffer'),
+  webserver = require('gulp-webserver'),
   del = require('del');
 
 // Styles
@@ -37,10 +37,6 @@ gulp.task('scripts', function() {
   return browserify('src/scripts/main.js')
     .bundle()
     .pipe(source('bundle.js'))
-    //.pipe(jshint('.jshintrc'))
-    //.pipe(jshint.reporter('default'))
-    //.pipe(concat('main.js'))
-    //.pipe(browserify({ 'standalone': true }))
     .pipe(gulp.dest('dist/scripts'))
     .pipe(buffer())
     .pipe(rename({ suffix: '.min' }))
@@ -68,10 +64,21 @@ gulp.task('clean', function() {
   return del(['dist/styles', 'dist/scripts', 'dist/images', 'dist/*.html']);
 });
 
-// Default task
-gulp.task('default', ['clean'], function() {
-  gulp.start('styles', 'scripts', 'images', 'htmls');
+gulp.task('webserver', function() {
+  gulp.src('dist')
+    .pipe(webserver({
+      host: 'localhost',
+      port: 8000,
+      livereload: true,
+      open: true
+    }));
 });
+
+gulp.task('start', ['styles', 'scripts', 'images', 'htmls'], function() {
+  gulp.start('webserver', 'watch');
+});
+
+gulp.task('default', ['start']);
 
 // Watch
 gulp.task('watch', function() {
@@ -87,12 +94,4 @@ gulp.task('watch', function() {
 
   // Watch html files
   gulp.watch('src/*.html', ['htmls']);
-
-
-  // Create LiveReload server
-  livereload.listen();
-
-  // Watch any files in dist/, reload on change
-  gulp.watch(['dist/**']).on('change', livereload.changed);
-
 });

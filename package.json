@@ -21,7 +21,6 @@
     "gulp-cssnano": "^2.1.2",
     "gulp-imagemin": "^3.3.0",
     "gulp-jshint": "^2.0.4",
-    "gulp-livereload": "^3.8.1",
     "gulp-notify": "^3.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
@@ -29,5 +28,8 @@
     "jquery": "^3.2.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "gulp-webserver": "^0.9.1"
   }
 }
