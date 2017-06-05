@@ -1,8 +1,3 @@
-/*!
- * gulp
- * $ npm install gulp-ruby-sass gulp-autoprefixer gulp-cssnano gulp-jshint gulp-concat gulp-uglify gulp-imagemin gulp-notify gulp-rename gulp-livereload gulp-cache del --save-dev
- */
-
 // Load plugins
 var gulp = require('gulp'),
   sass  = require('gulp-sass'),
@@ -12,7 +7,6 @@ var gulp = require('gulp'),
   imagemin = require('gulp-imagemin'),
   rename = require('gulp-rename'),
   concat = require('gulp-concat'),
-  notify = require('gulp-notify'),
   cache = require('gulp-cache'),
   browserify = require('browserify'),
   source = require('vinyl-source-stream'),
